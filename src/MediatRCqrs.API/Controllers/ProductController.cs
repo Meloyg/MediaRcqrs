@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using MediatRCqrs.API.Commands;
+using MediatRCqrs.API.Models;
 using MediatRCqrs.API.Queries;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,5 +28,13 @@ public class ProductController : ControllerBase
         var product = await _mediatr.Send(new GetProductByIdQuery(id));
 
         return product is not null ? Results.Ok(product) : Results.NotFound();
+    }
+    
+    [HttpPost]
+    public async Task<IResult> AddProduct(Product product)
+    {
+        var productToReturn = await _mediatr.Send(new AddProductCommand(product));
+
+        return Results.CreatedAtRoute("GetProductById", new { id = product.Id }, productToReturn);
     }
 }
